@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AgriSmart - Multi-Screen Agricultural Intelligence & B2B Mandi Platform</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- PWA Manifest & App Icons -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#059669" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+</head>
+<body class="h-full bg-[#070b12] text-slate-100 flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- Desktop Top Control Bar (Screen Switcher & View Mode) -->
+  <header class="bg-slate-900/90 border-b border-slate-800 text-xs py-2 px-4 flex flex-wrap items-center justify-between gap-3 shrink-0 z-40 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5 font-bold text-white tracking-tight">
+        <span class="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center text-xs">🌱</span>
+        <span>AgriSmart <span class="text-emerald-400 font-mono text-[11px] font-normal">v2.4 (11-Screen Suite)</span></span>
+      </div>
+      <span class="hidden sm:inline-block text-slate-600">•</span>
+      <!-- Direct Screen Switcher Dropdown for Reviewers -->
+      <div class="flex items-center gap-1.5 text-slate-400">
+        <label for="screen-switcher" class="hidden md:inline text-[11px] uppercase font-semibold text-slate-500">Jump Screen:</label>
+        <select
+          id="screen-switcher"
+          class="bg-slate-950 border border-slate-700/80 text-emerald-300 font-medium rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:border-emerald-500 cursor-pointer"
+          onchange="window.location.hash = this.value"
+        >
+          <option value="screen-1">Screen 1: Login & OTP</option>
+          <option value="screen-2">Screen 2: Location Access</option>
+          <option value="screen-3" selected>Screen 3: Main Dashboard</option>
+          <option value="screen-4">Screen 4: Profile Details</option>
+          <option value="screen-5">Screen 5: Message Tab (Call)</option>
+          <option value="screen-6">Screen 6: Weather & Radar</option>
+          <option value="screen-7">Screen 7: Smart Crop AI</option>
+          <option value="screen-8">Screen 8: B2B Buy & Sell Hub</option>
+          <option value="screen-9">Screen 9: Soil Health Data</option>
+          <option value="screen-10">Screen 10: Govt Schemes</option>
+          <option value="screen-11">Screen 11: Market Mandi Prices</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Right Controls: Toggle View Mode, Scan QR, & Reset State -->
+    <div class="flex items-center gap-2">
+      <button
+        id="open-qr-btn"
+        class="px-3 py-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg transition font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-950/40"
+        title="Open QR Code & Mobile Link to run on phone"
+      >
+        <span>📲 Scan QR Code</span>
+      </button>
+
+      <button
+        id="view-mode-toggle"
+        class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition font-medium text-xs flex items-center gap-1.5"
+        title="Switch between Mobile Smartphone Frame and Full Fluid Desktop"
+      >
+        <span>📱 Phone Frame</span>
+      </button>
+
+      <button
+        id="reset-demo-btn"
+        class="px-2.5 py-1 bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-800/50 rounded-lg transition text-xs font-medium"
+        onclick="localStorage.clear(); window.location.hash='screen-1'; window.location.reload();"
+        title="Reset all sample listings & preferences"
+      >
+        Reset State
+      </button>
+    </div>
+  </header>
+
+  <!-- Application Chassis / Device Mockup Container -->
+  <div class="flex-1 flex flex-col justify-center items-center p-0 sm:p-4 overflow-y-auto pt-3 sm:pt-4">
+    
+    <div id="app-container" class="mobile-frame-mode bg-slate-950 flex flex-col">
+      
+      <!-- Native Mobile Device Status Bar -->
+      <div id="device-status-bar" class="w-full bg-slate-900/90 text-slate-300 text-[11px] font-semibold px-6 pt-3 pb-2 flex items-center justify-between shrink-0 select-none z-30">
+        <span id="device-time" class="font-bold">09:41</span>
+        <!-- Speaker / Camera Dynamic Island cutout -->
+        <div class="w-20 h-4 bg-slate-950 rounded-full mx-auto border border-slate-800/80 flex items-center justify-center">
+          <div class="w-2 h-2 rounded-full bg-slate-800"></div>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-slate-300">
+          <span>5G</span>
+          <span>📶</span>
+          <span>🔋</span>
+        </div>
+      </div>
+
+      <!-- Main Dynamic Screen Viewport -->
+      <div id="screen-viewport" class="flex-1 w-full overflow-y-auto bg-[#090d16] flex flex-col relative">
+        <!-- Rendered active screen appears here dynamically -->
+      </div>
+
+      <!-- Persistent Bottom Navigation Bar (always visible, part of frame) -->
+      <nav id="bottom-nav-bar" class="w-full bg-slate-900/95 border-t border-slate-800 backdrop-blur-xl px-4 py-2 shrink-0 z-30">
+        <div class="flex items-center justify-around text-xs">
+
+          <button onclick="window.location.hash='screen-3'" data-nav="screen-3"
+            class="bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl">
+            <span class="text-base">🏠</span>
+            <span>Home</span>
+          </button>
+
+          <button onclick="window.location.hash='screen-11'" data-nav="screen-11"
+            class="bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl">
+            <span class="text-base">📊</span>
+            <span>Mandi</span>
+          </button>
+
+          <button onclick="window.location.hash='screen-8'" data-nav="screen-8"
+            class="bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl">
+            <span class="text-base">🚜</span>
+            <span>B2B Hub</span>
+          </button>
+
+          <button onclick="window.location.hash='screen-6'" data-nav="screen-6"
+            class="bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl">
+            <span class="text-base">⛅</span>
+            <span>Weather</span>
+          </button>
+
+          <button onclick="window.location.hash='screen-4'" data-nav="screen-4"
+            class="bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl">
+            <span class="text-base">👤</span>
+            <span>Profile</span>
+          </button>
+
+        </div>
+      </nav>
+
+      <!-- Native Mobile Home Indicator Bar -->
+      <div id="device-home-bar" class="w-full bg-slate-900/95 py-2.5 flex items-center justify-center shrink-0 z-30">
+        <div class="w-32 h-1 bg-slate-600/80 rounded-full hover:bg-slate-400 transition cursor-pointer" onclick="window.location.hash='screen-3'"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Dynamic Modal Root Container -->
+  <div id="modal-root"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
+
+  <!-- Main ES Module Application Script -->
+  <script type="module" src="./js/app.js"></script>
+
+  <script type="module">
+    import { openShareQrModal } from './js/components/modal.js';
+    
+    // Wire up Scan QR Code button
+    const qrBtn = document.getElementById('open-qr-btn');
+    if (qrBtn) {
+      qrBtn.addEventListener('click', () => {
+        openShareQrModal({
+          wifiUrl: 'http://10.54.0.247:8080',
+          localUrl: 'http://localhost:8080'
+        });
+      });
+    }
+
+    // Register Service Worker for PWA / APK installation
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('AgriSmart PWA Service Worker Registered:', reg.scope))
+          .catch((err) => console.warn('PWA SW registration failed:', err));
+      });
+    }
+  </script>
+
+  <script>
+    // Keep device time live
+    setInterval(() => {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeEl = document.getElementById('device-time');
+      if (timeEl) timeEl.textContent = timeStr;
+    }, 10000);
+
+    // Keep dropdown in sync with hash
+    window.addEventListener('hashchange', () => {
+      const switcher = document.getElementById('screen-switcher');
+      const hash = window.location.hash.replace('#', '');
+      if (switcher && hash) switcher.value = hash;
+    });
+
+    // Bottom nav active state: highlight matching tab on each navigation
+    function updateBottomNav() {
+      const hash = window.location.hash.replace('#', '') || 'screen-3';
+      document.querySelectorAll('#bottom-nav-bar .bnav-btn').forEach(btn => {
+        const nav = btn.getAttribute('data-nav');
+        if (nav === hash) {
+          btn.className = 'bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl text-emerald-400 font-semibold bg-emerald-950/40';
+        } else {
+          btn.className = 'bnav-btn flex flex-col items-center gap-1 transition px-3 py-1 rounded-xl text-slate-400 hover:text-white';
+        }
+      });
+    }
+    window.addEventListener('hashchange', updateBottomNav);
+    window.addEventListener('load', updateBottomNav);
+  </script>
+</body>
+</html>

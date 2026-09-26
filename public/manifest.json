@@ -1,0 +1,29 @@
+{
+  "name": "KrishiMitra — Kisan Advisory & B2B Mandi",
+  "short_name": "KrishiMitra",
+  "description": "Digital mandi prices, AI crop recommendations, weather alerts, soil health cards, and B2B trading hub for Indian farmers.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#111110",
+  "theme_color": "#2e7d52",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["agriculture", "business", "productivity"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
