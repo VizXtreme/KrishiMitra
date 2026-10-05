@@ -1,13 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Sparkles, Bot, X, BellRing, Check } from 'lucide-react';
 import { useAgri } from '@/context/AgriContext';
 
 export default function FloatingAiButton() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const { addToast } = useAgri();
+
+  if (pathname === '/login' || pathname === '/location') {
+    return null;
+  }
 
   const handleNotifyMe = () => {
     setSubscribed(true);

@@ -12,12 +12,12 @@ import {
   createListing 
 } from '@/lib/supabase';
 
-const STORAGE_KEY = 'krishimitra_app_state_v3';
+const STORAGE_KEY = 'krishimitra_app_state_v4';
 
 const defaultState = {
   auth: {
-    isLoggedIn: true,
-    authProvider: 'phone',
+    isLoggedIn: false,
+    authProvider: null,
     phone: '9876543210',
     formattedPhone: '+91 98765 43210',
     email: 'rajesh.sharma.farmer@agri.in',
@@ -28,7 +28,7 @@ const defaultState = {
     verified: true,
   },
   location: {
-    granted: true,
+    granted: false,
     lat: 30.9010,
     lon: 75.8573,
     district: 'Ludhiana',
@@ -527,7 +527,7 @@ export function AgriProvider({ children }) {
   // Load from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('agrismart_app_state_v3');
+      const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         setState((prev) => ({
@@ -543,6 +543,17 @@ export function AgriProvider({ children }) {
             farmerListings: parsed.marketplace?.farmerListings || prev.marketplace.farmerListings,
           },
         }));
+        if (typeof document !== 'undefined') {
+          if (parsed.auth?.isLoggedIn) {
+            document.cookie = 'krishimitra_logged_in=true; path=/; max-age=2592000; SameSite=Lax';
+          } else {
+            document.cookie = 'krishimitra_logged_in=; path=/; max-age=0; SameSite=Lax';
+          }
+        }
+      } else {
+        if (typeof document !== 'undefined') {
+          document.cookie = 'krishimitra_logged_in=; path=/; max-age=0; SameSite=Lax';
+        }
       }
     } catch (e) {
       console.warn('Failed to load local storage state:', e);
@@ -610,13 +621,20 @@ export function AgriProvider({ children }) {
     };
   }, []);
 
-  // Save state on changes
+  // Save state on changes & keep auth cookie synced
   useEffect(() => {
     if (mounted) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch (e) {
         console.warn('Failed to save state to localStorage:', e);
+      }
+      if (typeof document !== 'undefined') {
+        if (state.auth?.isLoggedIn) {
+          document.cookie = 'krishimitra_logged_in=true; path=/; max-age=2592000; SameSite=Lax';
+        } else {
+          document.cookie = 'krishimitra_logged_in=; path=/; max-age=0; SameSite=Lax';
+        }
       }
     }
   }, [state, mounted]);
@@ -648,6 +666,9 @@ export function AgriProvider({ children }) {
   // Actions
   const loginWithPhone = (phoneNumber) => {
     const clean = phoneNumber.replace(/\D/g, '');
+    if (typeof document !== 'undefined') {
+      document.cookie = 'krishimitra_logged_in=true; path=/; max-age=2592000; SameSite=Lax';
+    }
     setState((prev) => ({
       ...prev,
       auth: {
@@ -661,6 +682,9 @@ export function AgriProvider({ children }) {
   };
 
   const loginWithGoogle = (userData = null) => {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'krishimitra_logged_in=true; path=/; max-age=2592000; SameSite=Lax';
+    }
     setState((prev) => ({
       ...prev,
       auth: {
@@ -677,6 +701,9 @@ export function AgriProvider({ children }) {
   const logout = () => {
     if (isSupabaseConfigured && supabase) {
       supabaseSignOut().catch(() => {});
+    }
+    if (typeof document !== 'undefined') {
+      document.cookie = 'krishimitra_logged_in=; path=/; max-age=0; SameSite=Lax';
     }
     setState((prev) => ({
       ...prev,
@@ -879,6 +906,9 @@ export function AgriProvider({ children }) {
   };
 
   const resetAll = () => {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'krishimitra_logged_in=; path=/; max-age=0; SameSite=Lax';
+    }
     setState(JSON.parse(JSON.stringify(defaultState)));
     localStorage.removeItem(STORAGE_KEY);
     addToast('Reset application data to sample default state', 'info');
@@ -890,6 +920,7 @@ export function AgriProvider({ children }) {
     <AgriContext.Provider
       value={{
         ...state,
+        mounted,
         unreadMessagesCount,
         isSupabaseConfigured,
         loginWithPhone,

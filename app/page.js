@@ -7,8 +7,15 @@ import { useAgri } from '@/context/AgriContext';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { weather, banners } = useAgri();
+  const { auth, mounted, weather, banners } = useAgri();
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Authentication check: redirect unauthenticated users to /login
+  useEffect(() => {
+    if (mounted && !auth?.isLoggedIn) {
+      router.replace('/login');
+    }
+  }, [mounted, auth?.isLoggedIn, router]);
 
   // Auto-sliding carousel
   useEffect(() => {
@@ -18,6 +25,17 @@ export default function DashboardPage() {
     }, 4500);
     return () => clearInterval(timer);
   }, [banners]);
+
+  if (!mounted || !auth?.isLoggedIn) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-2 border-[#2e7d52] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs text-[#a09a93] font-medium">Opening KrishiMitra...</span>
+        </div>
+      </div>
+    );
+  }
 
   const coreServices = [
     {

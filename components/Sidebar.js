@@ -24,7 +24,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { unreadMessagesCount, location, mandiData } = useAgri();
 
-  if (pathname === '/login') {
+  if (pathname === '/login' || pathname === '/location') {
     return null;
   }
 

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function InstallPwaBanner() {
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showBanner, setShowBanner] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -79,16 +81,16 @@ export default function InstallPwaBanner() {
     } catch (e) {}
   };
 
-  if (isStandalone) return null;
+  if (isStandalone || pathname === '/login' || pathname === '/location') return null;
 
   return (
     <>
-      {/* Non-intrusive Install Banner */}
+      {/* Non-intrusive Install Banner - Positioned neatly above Krishi AI FAB */}
       {showBanner && (
         <div 
           role="region"
           aria-label="PWA Web App Installation Banner"
-          className="fixed bottom-16 lg:bottom-4 left-3 right-3 sm:left-auto sm:right-4 sm:max-w-md z-40 bg-[#1f1e1c]/95 border border-[#3d9b63]/40 rounded-2xl p-3.5 sm:p-4 shadow-2xl backdrop-blur-xl animate-slide-up flex items-center justify-between gap-3 text-[#ede9e3]"
+          className="fixed bottom-36 lg:bottom-20 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-md z-40 bg-[#1f1e1c]/95 border border-[#3d9b63]/40 rounded-2xl p-3.5 sm:p-4 shadow-2xl backdrop-blur-xl animate-slide-up flex items-center justify-between gap-3 text-[#ede9e3]"
         >
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-[#252e24] border border-[#383430] flex items-center justify-center text-xl shrink-0">
